@@ -1,0 +1,252 @@
+/* Estilo da página única (index.html). As cores de aviso (amarelo/vermelho)
+   são as mesmas usadas na planilha gerada pelo backend (app/grid.py), para a
+   tela e o arquivo baixado sempre baterem visualmente. */
+
+:root {
+  /* Variáveis de cor: mude aqui para trocar o tema em todos os lugares de uma vez. */
+  --azul-cabecalho: #173772;
+  --amarelo: #FFF3CD;
+  --vermelho: #F8D7DA;
+  --borda-vermelha: #DC3545;
+  --texto: #1f2430;
+  --texto-suave: #5b6472;
+  --fundo: #f4f5f7;
+  --borda: #d9dde3;
+  --branco: #fff;
+  --sombra: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+* { box-sizing: border-box; } /* largura/altura já incluem padding e borda */
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+.topo {
+  background: var(--azul-cabecalho);
+  color: #fff;
+  padding: 20px 28px;
+}
+.topo h1 { margin: 0; font-size: 1.35rem; }
+.subtitulo { margin: 4px 0 0; opacity: 0.85; font-size: 0.9rem; }
+
+main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+/* As três telas ficam todas no HTML ao mesmo tempo; só a que tem a classe
+   "ativa" fica visível (controlado pelo JS, em mostrarTela()). */
+.tela { display: none; }
+.tela.ativa { display: block; }
+
+/* --- Envio --- */
+
+.cartao-envio {
+  background: var(--branco);
+  border-radius: 10px;
+  box-shadow: var(--sombra);
+  padding: 28px;
+  max-width: 460px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.campo { display: flex; flex-direction: column; gap: 6px; }
+.campo label { font-weight: 600; font-size: 0.9rem; }
+select, input[type="file"] {
+  padding: 9px 10px;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: var(--branco);
+}
+.ajuda { font-size: 0.8rem; color: var(--texto-suave); margin: 0; }
+button {
+  background: var(--azul-cabecalho);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover { filter: brightness(1.1); }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+button.secundario { background: var(--branco); color: var(--texto); border: 1px solid var(--borda); }
+.erro {
+  background: var(--vermelho);
+  border-left: 3px solid var(--borda-vermelha);
+  padding: 10px 12px;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+/* --- Processando --- */
+
+.cartao-processando {
+  text-align: center;
+  max-width: 420px;
+  margin: 80px auto;
+  background: var(--branco);
+  padding: 40px 28px;
+  border-radius: 10px;
+  box-shadow: var(--sombra);
+}
+.spinner {
+  /* Círculo com uma borda de cor diferente, girando: o efeito clássico de "carregando". */
+  width: 40px; height: 40px;
+  margin: 0 auto 18px;
+  border: 4px solid var(--borda);
+  border-top-color: var(--azul-cabecalho);
+  border-radius: 50%;
+  animation: girar 0.9s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* --- Revisão --- */
+/* Tela principal: painel do PDF à esquerda, tabela editável à direita. */
+
+.barra-revisao {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.resumo-avisos { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.82rem; }
+.chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.chip.amarelo { background: var(--amarelo); color: #7a5c00; }
+.chip.vermelho { background: var(--vermelho); color: #7a1620; }
+.chip.neutro { background: #e6e9ee; color: var(--texto-suave); }
+
+.acoes-revisao { display: flex; gap: 8px; align-items: center; }
+.acoes-revisao select { padding: 8px; }
+
+.painel-revisao {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* duas colunas de largura igual: PDF | tabela */
+  gap: 16px;
+  height: calc(100vh - 220px); /* ocupa a altura da tela, descontando cabeçalho/rodapé */
+  min-height: 480px;
+}
+
+.painel-pdf, .painel-tabela {
+  background: var(--branco);
+  border-radius: 10px;
+  box-shadow: var(--sombra);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.painel-pdf-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px;
+  border-bottom: 1px solid var(--borda);
+}
+.painel-pdf-cabecalho button {
+  background: var(--fundo);
+  color: var(--texto);
+  padding: 4px 10px;
+}
+
+.pdf-scroll {
+  flex: 1;
+  overflow: auto;
+  background: #525659;
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+}
+.pdf-pagina-wrap {
+  position: relative;
+  line-height: 0; /* remove o espaço fantasma abaixo do canvas */
+}
+#pdf-canvas { box-shadow: 0 0 8px rgba(0,0,0,0.4); background: #fff; display: block; }
+.pdf-realce {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 2px solid #2d7dfb;
+  background: rgba(45, 125, 251, 0.18);
+  border-radius: 2px;
+  pointer-events: none;
+  transition: top 0.15s, left 0.15s, width 0.15s, height 0.15s;
+}
+
+.tabela-scroll { flex: 1; overflow: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+thead th {
+  position: sticky; /* cabeçalho fica fixo no topo ao rolar a tabela */
+  top: 0;
+  background: var(--azul-cabecalho);
+  color: #fff;
+  font-weight: 700;
+  padding: 9px 10px;
+  text-align: left;
+  white-space: nowrap;
+  z-index: 1;
+}
+tbody td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--borda);
+  white-space: nowrap;
+}
+/* Cores de aviso, aplicadas pelo JS conforme a severidade calculada no backend. */
+tbody tr.linha-amarela td { background: var(--amarelo); }
+tbody tr.linha-vermelha td { background: var(--vermelho); }
+tbody tr.linha-vermelha td:first-child { border-left: 3px solid var(--borda-vermelha); }
+tbody tr:hover td { filter: brightness(0.97); }
+
+/* Célula editável (contentEditable="true", ligado pelo JS em ehEditavel()) */
+td[contenteditable="true"] {
+  cursor: text;
+  outline: none;
+  min-width: 60px;
+}
+td[contenteditable="true"]:focus {
+  outline: 2px solid var(--azul-cabecalho);
+  outline-offset: -2px;
+}
+/* Marca visualmente célula com "?" (caractere que o OCR não conseguiu ler) */
+td.tem-incerteza { position: relative; }
+td.tem-incerteza::after {
+  content: "?";
+  color: var(--borda-vermelha);
+  font-weight: 800;
+  margin-left: 4px;
+}
+td.editada { box-shadow: inset 0 -2px 0 #2d7dfb; } /* marca célula que o usuário já editou */
+
+.aviso-motivo {
+  display: inline-block;
+  font-size: 0.72rem;
+  color: var(--texto-suave);
+  max-width: 220px;
+  white-space: normal;
+}
+
+.rodape {
+  text-align: center;
+  padding: 14px;
+  color: var(--texto-suave);
+  font-size: 0.78rem;
+}
+
+/* Tela estreita (celular/tablet): empilha PDF e tabela em vez de lado a lado. */
+@media (max-width: 900px) {
+  .painel-revisao { grid-template-columns: 1fr; height: auto; }
+  .painel-pdf, .painel-tabela { height: 60vh; }
+}

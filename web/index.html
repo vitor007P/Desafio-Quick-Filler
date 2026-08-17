@@ -1,0 +1,107 @@
+<!doctype html>
+<!-- Página única com três "telas" (envio, processando, revisão) que o
+     app.js mostra/esconde uma de cada vez. Sem framework: é só
+     HTML + CSS + JS puro, servido direto pelo FastAPI (ver app/main.py). -->
+<html lang="pt-br">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Transcrição de documentos — Quick Filler</title>
+<link rel="stylesheet" href="/estilo.css" />
+</head>
+<body>
+  <header class="topo">
+    <h1>Transcrição de cartão de ponto e holerite</h1>
+    <p class="subtitulo">Envie o PDF, acompanhe o processamento, revise e baixe a planilha.</p>
+  </header>
+
+  <main>
+    <!-- Etapa 1: envio — formulário com o arquivo PDF e o tipo de documento -->
+    <section id="tela-envio" class="tela ativa">
+      <form id="form-envio" class="cartao-envio">
+        <div class="campo">
+          <label for="tipo">Tipo de documento</label>
+          <select id="tipo" name="tipo" required>
+            <option value="cartao-ponto">Cartão de ponto</option>
+            <option value="holerite">Holerite</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="arquivo">Arquivo PDF</label>
+          <input id="arquivo" name="arquivo" type="file" accept="application/pdf" required />
+          <!-- Preenchido pelo JS com o limite de tamanho/páginas (rota /api/info) -->
+          <p class="ajuda" id="ajuda-arquivo"></p>
+        </div>
+
+        <button type="submit" id="btn-enviar">Enviar</button>
+        <p class="erro" id="erro-envio" hidden></p>
+      </form>
+    </section>
+
+    <!-- Etapa 2: processando — aparece enquanto o backend processa em segundo plano -->
+    <section id="tela-processando" class="tela">
+      <div class="cartao-processando">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="texto-processando">Processando documento…</p>
+        <p class="ajuda">Isso pode levar de alguns segundos a alguns minutos, dependendo do
+          tamanho e de o documento precisar de OCR.</p>
+      </div>
+    </section>
+
+    <!-- Etapa 3: revisão — tabela editável ao lado do PDF original -->
+    <section id="tela-revisao" class="tela">
+      <div class="barra-revisao">
+        <!-- Preenchido pelo JS: contagem de cada tipo de aviso (ex.: "Data não sequencial: 2") -->
+        <div class="resumo-avisos" id="resumo-avisos"></div>
+        <div class="acoes-revisao">
+          <label for="formato-download">Baixar como</label>
+          <select id="formato-download">
+            <option value="xlsx">.xlsx</option>
+            <option value="csv">.csv</option>
+            <option value="json">.json</option>
+          </select>
+          <button id="btn-baixar">Baixar planilha</button>
+          <button id="btn-nova" class="secundario">Nova transcrição</button>
+        </div>
+      </div>
+
+      <div class="painel-revisao">
+        <!-- Lado esquerdo: o PDF original, para comparar com a tabela -->
+        <div class="painel-pdf">
+          <div class="painel-pdf-cabecalho">
+            <button id="pdf-anterior" title="Página anterior">‹</button>
+            <span id="pdf-pagina-atual">Página 1</span>
+            <button id="pdf-proxima" title="Próxima página">›</button>
+          </div>
+          <div class="pdf-scroll">
+            <div class="pdf-pagina-wrap">
+              <canvas id="pdf-canvas"></canvas>
+              <!-- Retângulo que "acende" sobre o PDF ao clicar numa célula da tabela -->
+              <div id="pdf-realce" class="pdf-realce" hidden></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lado direito: a tabela editável, montada pelo JS a partir da grade -->
+        <div class="painel-tabela">
+          <div class="tabela-scroll">
+            <table id="tabela-grade">
+              <thead><tr id="tabela-cabecalho"></tr></thead>
+              <tbody id="tabela-corpo"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <!-- Mensagens de status da revisão: "Editando…", "Salvando…", "Salvo." -->
+    <span id="rodape-status"></span>
+  </footer>
+
+  <!-- type="module" porque app.js usa "import" (pdf.js) -->
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

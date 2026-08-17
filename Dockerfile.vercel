@@ -1,0 +1,46 @@
+# Imagem usada pela Vercel para rodar esta aplicação como um "Container
+# Function" (ver vercel.json). É praticamente o mesmo Dockerfile do
+# docker-compose local — a diferença é que aqui a porta vem da variável de
+# ambiente $PORT (a Vercel decide qual porta usar) em vez de ser fixa em 8000.
+#
+# Por que precisa de um Dockerfile e não da runtime Python "pura" da Vercel:
+# o Tesseract é um binário de sistema (instalado via apt-get), e a runtime
+# Python padrão da Vercel só instala pacotes pip — ela não tem como instalar
+# um executável do sistema operacional. Empacotando tudo num container, a
+# gente controla o ambiente inteiro, exatamente como localmente.
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8000
+
+# tesseract-ocr-por: modelo de português — a maioria dos documentos trabalhistas
+# brasileiros vem nesse idioma, e sem o pacote de idioma o Tesseract cai para
+# inglês e erra sistematicamente acentos e formatação de data.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tesseract-ocr \
+    tesseract-ocr-por \
+    libgl1 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app ./app
+COPY web ./web
+
+# Em containers de função (Vercel/serverless) o disco é temporário e some a
+# qualquer momento entre execuções — por isso apontamos o armazenamento para
+# /tmp, a única pasta garantidamente gravável nesse tipo de ambiente. Isso é
+# suficiente para o ciclo enviar→processar→revisar→baixar de uma sessão, mas
+# não é armazenamento durável (é o mesmo espírito da retenção curta de 60
+# minutos que a aplicação já aplica sozinha).
+ENV STORAGE_DIR=/tmp/data
+
+EXPOSE 8000
+
+# $PORT vem da Vercel em tempo de execução; localmente (docker run sem
+# definir PORT) cai no valor padrão 8000 configurado acima.
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port $PORT"]

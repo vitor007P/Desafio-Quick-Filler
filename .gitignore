@@ -1,0 +1,29 @@
+# Ambiente virtual Python
+.venv/
+__pycache__/
+*.pyc
+
+# Caches de ferramentas
+.pytest_cache/
+.ruff_cache/
+
+# Dados enviados pelos usuários (PDFs e transcrições) — nunca versionar
+data/
+
+# Logs locais
+*.log
+
+# Vercel
+.vercel/
+
+# Node (caso alguém instale a CLI da Vercel localmente no projeto)
+node_modules/
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Configuração local do Claude Code (específica desta máquina)
+.claude/settings.local.json
