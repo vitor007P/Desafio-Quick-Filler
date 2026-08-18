@@ -104,6 +104,9 @@ com o `docker-compose.yml` deste repositório, etc.).
 
 ## Estrutura do projeto
 
+> Para uma explicação de cada arquivo em linguagem simples e prática (o que
+> cada um faz e por quê), veja [`GUIA-DO-PROJETO.md`](./GUIA-DO-PROJETO.md).
+
 ```
 app/
   api/routes.py          # endpoints HTTP (/api/transcricoes, /healthz, ...)

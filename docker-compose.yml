@@ -1,8 +1,11 @@
+# Sobe a aplicação localmente com um único comando: `docker compose up --build`.
+# Constrói a imagem a partir do Dockerfile deste diretório, expõe a porta 8000
+# e guarda os dados num volume Docker (não se perdem ao reiniciar o container).
 services:
   app:
     build: .
     ports:
-      - "8000:8000"
+      - "8000:8000"  # host:container — acesse em http://localhost:8000
     environment:
       # Retenção curta por padrão — documentos com CPF e salário não devem
       # sobreviver mais do que o necessário para o ciclo enviar→revisar→baixar.
@@ -18,14 +21,16 @@ services:
       - OCR_DPI=300
       - LOG_LEVEL=INFO
     volumes:
-      - dados:/app/data
+      - dados:/app/data  # volume nomeado: os PDFs/planilhas sobrevivem a "docker compose restart"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz', timeout=3)"]
       interval: 30s
       timeout: 5s
       start_period: 10s
       retries: 3
-    restart: unless-stopped
+    restart: unless-stopped  # reinicia sozinho se cair, exceto se você parar manualmente
 
+# Volume gerenciado pelo Docker (não é uma pasta comum do projeto) — é aqui
+# que os arquivos de "dados:/app/data" acima realmente ficam guardados.
 volumes:
   dados:
