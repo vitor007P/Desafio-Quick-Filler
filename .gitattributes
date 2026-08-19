@@ -1,0 +1,5 @@
+# PDFs são binários: nunca deixar o Git tentar normalizar fim de linha
+# (core.autocrlf) neles — em texto isso é inofensivo, num PDF corrompe o
+# arquivo, porque bytes que fazem parte do fluxo comprimido/binário podem ser
+# lidos como CR/LF por engano.
+*.pdf binary
