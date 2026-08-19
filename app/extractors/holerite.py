@@ -410,12 +410,12 @@ def _extrair_bases(
     if y_inicio == float("inf"):
         # A tabela não terminou com um rótulo conhecido: varremos a página
         # inteira atrás de pares rótulo/valor de base, sem faixa de corte.
-        candidatas = [l for l in linhas if _eh_inicio_bases(l) or _so_valores(l)]
-        y_inicio = min((l.y0 for l in candidatas), default=float("inf"))
+        candidatas = [linha for linha in linhas if _eh_inicio_bases(linha) or _so_valores(linha)]
+        y_inicio = min((linha.y0 for linha in candidatas), default=float("inf"))
         if y_inicio == float("inf"):
             return []  # não achou nenhuma base na página
 
-    regiao = [l for l in linhas if l.y0 >= y_inicio - 1]
+    regiao = [linha for linha in linhas if linha.y0 >= y_inicio - 1]
     bases: list[dict] = []
 
     i = 0

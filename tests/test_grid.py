@@ -43,7 +43,7 @@ def test_cartao_documento_continuo_marca_o_pulo_de_data():
         _dia("05/05/2019", "08:00", "18:00"),  # pulou 03 e 04
     ]
     grade = montar_grade("cartao-ponto", {"pages": [{"page": 1, "days": dias}]})
-    avisos = [l.avisos for l in grade.linhas]
+    avisos = [linha.avisos for linha in grade.linhas]
     assert "data_nao_sequencial" not in avisos[1]
     assert "data_nao_sequencial" in avisos[2]
 
@@ -83,7 +83,7 @@ def test_holerite_marca_pagina_vazia():
 def test_holerite_marca_mes_fora_da_sequencia():
     paginas = [_pagina_holerite(i + 1, f"{m:02d}", "2020") for i, m in enumerate([1, 2, 4])]
     grade = montar_grade("holerite", {"pages": paginas})
-    avisos = [l.avisos for l in grade.linhas]
+    avisos = [linha.avisos for linha in grade.linhas]
     assert "mes_nao_sequencial" not in avisos[1]  # jan -> fev
     assert "mes_nao_sequencial" in avisos[2]  # fev -> abr, pulou março
 
@@ -91,7 +91,7 @@ def test_holerite_marca_mes_fora_da_sequencia():
 def test_holerite_dezembro_janeiro_e_consecutivo():
     paginas = [_pagina_holerite(1, "12", "2019"), _pagina_holerite(2, "01", "2020")]
     grade = montar_grade("holerite", {"pages": paginas})
-    assert all("mes_nao_sequencial" not in l.avisos for l in grade.linhas)
+    assert all("mes_nao_sequencial" not in linha.avisos for linha in grade.linhas)
 
 
 def test_holerite_pagina_ilegivel_nao_quebra_a_cadeia():
