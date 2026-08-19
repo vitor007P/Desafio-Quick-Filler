@@ -80,13 +80,13 @@ class Grade:
             "colunas": self.colunas,
             "linhas": [
                 {
-                    "celulas": l.celulas,
-                    "avisos": l.avisos,
-                    "mensagens": l.mensagens,
-                    "severidade": l.severidade,
-                    "ref": l.ref,
+                    "celulas": linha.celulas,
+                    "avisos": linha.avisos,
+                    "mensagens": linha.mensagens,
+                    "severidade": linha.severidade,
+                    "ref": linha.ref,
                 }
-                for l in self.linhas
+                for linha in self.linhas
             ],
         }
 
@@ -171,8 +171,8 @@ def _datas_nao_sequenciais(datas: list[str]) -> set[int]:
 
     # Descobre o ano/mês "de contexto": o que mais se repete entre as datas
     # legíveis, usado para completar datas que vieram sem ano ou sem mês.
-    anos = [l.ano for l in lidas if l.ano]
-    meses = [l.mes for l in lidas if l.mes]
+    anos = [lida.ano for lida in lidas if lida.ano]
+    meses = [lida.mes for lida in lidas if lida.mes]
     ano_ctx = max(set(anos), key=anos.count) if anos else None
     mes_ctx = max(set(meses), key=meses.count) if meses else None
 
