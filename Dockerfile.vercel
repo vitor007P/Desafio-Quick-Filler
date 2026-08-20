@@ -1,7 +1,9 @@
 # Imagem usada pela Vercel para rodar esta aplicação como um "Container
 # Function" (ver vercel.json). É praticamente o mesmo Dockerfile do
 # docker-compose local — a diferença é que aqui a porta vem da variável de
-# ambiente $PORT (a Vercel decide qual porta usar) em vez de ser fixa em 8000.
+# ambiente $PORT. A Vercel espera o container escutando na porta 80 por
+# padrão (só muda se você definir PORT nas configurações do projeto), por
+# isso o default aqui é 80 em vez dos 8000 fixos do Dockerfile local.
 #
 # Por que precisa de um Dockerfile e não da runtime Python "pura" da Vercel:
 # o Tesseract é um binário de sistema (instalado via apt-get), e a runtime
@@ -12,7 +14,7 @@ FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=8000
+    PORT=80
 
 # tesseract-ocr-por: modelo de português — a maioria dos documentos trabalhistas
 # brasileiros vem nesse idioma, e sem o pacote de idioma o Tesseract cai para
@@ -39,8 +41,12 @@ COPY web ./web
 # minutos que a aplicação já aplica sozinha).
 ENV STORAGE_DIR=/tmp/data
 
-EXPOSE 8000
+# A Vercel espera que o container escute na porta 80 por padrão (só usa outra
+# se você definir PORT nas configurações do projeto) — por isso $PORT aqui
+# vale 80, diferente do Dockerfile local (porta 8000 fixa).
+EXPOSE 80
 
-# $PORT vem da Vercel em tempo de execução; localmente (docker run sem
-# definir PORT) cai no valor padrão 8000 configurado acima.
+# $PORT só é sobrescrito se você definir essa env var nas configurações do
+# projeto na Vercel; caso contrário cai no valor padrão 80 configurado acima
+# (e localmente, docker run sem definir PORT também cai nesse padrão).
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port $PORT"]
